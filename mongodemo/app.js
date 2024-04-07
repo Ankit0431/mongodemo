@@ -2,11 +2,18 @@ const express = require('express');
 const app = express();
 const mwLogger = require('./middlewares/logger');
 const mongoose = require('mongoose');
-
+const dotenv = require('dotenv');
 const productRouter = require('./routes/products/routes');
 const userRouter = require('./routes/users/routes');
-
-mongoose.connect(process.env.MDB_CONN_STR);
+const cors = require('cors');
+dotenv.config();
+// const corsOptions = () => {
+//     origin:'http://localhost:3000'
+// }
+app.use(cors());
+mongoose.connect(process.env.MDB_CONN_STR,{
+    dbName:'mongodemo'
+});
 
 mongoose.connection.on('connected', () => console.log('Database connected!'));
 mongoose.connection.on('disconnected', () => console.log('Database disconnected!'));
