@@ -7,10 +7,11 @@ const productRouter = require('./routes/products/routes');
 const userRouter = require('./routes/users/routes');
 const cors = require('cors');
 dotenv.config();
-// const corsOptions = () => {
-//     origin:'http://localhost:3000'
-// }
-app.use(cors());
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
+};
+app.use(cors(corsOptions)); 
 mongoose.connect(process.env.MDB_CONN_STR,{
     dbName:'mongodemo'
 });
