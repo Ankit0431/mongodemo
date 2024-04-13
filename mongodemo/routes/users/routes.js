@@ -22,27 +22,36 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
-    const userId = req.params.id;
-    const { name, email, phone } = req.body;
-
+router.put('/', async (req, res) => {
+    const userObj = req.body;
+    console.log(userObj);
     try {
-        const user = await User.findByIdAndUpdate(userId, { name, email, phone }, { new: true });
-        if (!user) {
-            return res.status(404).json(new GenerateResponse(false, "User not found"));
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userObj._id },
+            {
+                name: userObj.name,
+                age: userObj.age,
+                email: userObj.email,
+                phone: userObj.phone
+            },
+            { returnDocument: 'after' } // Return the updated document
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
-        const users = await getUsers();
-        res.json(new GenerateResponse(true, undefined, users));
+
+        const users = await getUsers(); // Assuming getUsers() fetches all users
+        res.json({ success: true, data: users });
     } catch (error) {
-        res.status(500).json(new GenerateResponse(false, error.message));
+        console.error('Error updating user:', error);
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
-router.post('/', async (req, res) => {
-    const { name, email, phone } = req.body; // Extracting name, email, and phone from request body
-
+router.post('/', async (req,res) => {
     try {
-        const user = await User.create({ name, email, phone }); // Creating new user with provided fields
+        const user = await User.create(req.body); // Creating new user with provided fields
         const users = await getUsers();
         res.json(new GenerateResponse(true, undefined, users));
     } catch (error) {
